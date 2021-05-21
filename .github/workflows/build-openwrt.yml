@@ -16,11 +16,12 @@ on:
     inputs:
       ssh:
         description: 'SSH connection to Actions'
-        required: false
+        required: true
         default: 'false'
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
+  #REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_URL: https://github.com/openwrt/openwrt
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
@@ -60,6 +61,10 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+       
+       
+        
+       
 
     - name: Load custom feeds
       run: |
@@ -67,9 +72,23 @@ jobs:
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
-
+        git init lean && cd lean
+        git config core.sparsecheckout true
+        git remote add origin https://github.com/coolsnowwolf/lede.git
+        echo 'package/libs/libdouble-conversion' >> .git/info/sparse-checkout
+        echo 'package/lean' >> .git/info/sparse-checkout
+        echo 'tools/libelf' >> .git/info/sparse-checkout
+        echo 'tools/qemu' >> .git/info/sparse-checkout
+        echo 'tools/ucl' >> .git/info/sparse-checkout
+        echo 'tools/upslug2' >> .git/info/sparse-checkout
+        echo 'tools/upx' >> .git/info/sparse-checkout
+        echo 'tools/wrt350nv2-builder' >> .git/info/sparse-checkout
+        git pull origin master
+        cp -Ruf package ../ && cp -Ruf tools ../ && cd ../ && rm -rf lean && rm -rf package/lean/luci-app-docker
+        sed -i 's/:=+luci-app-samba/:=+luci-app-samba4/g' package/lean/autosamba/Makefile && rm -rf package/lean/samba4
+	
     - name: Update feeds
-      run: cd openwrt && ./scripts/feeds update -a
+      run: cd openwrt && ./scripts/feeds update -a &&  cp -Ruf feeds/packages/lang feeds  && cp -rf feeds/packages/net/samba4 package/lean/
 
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
