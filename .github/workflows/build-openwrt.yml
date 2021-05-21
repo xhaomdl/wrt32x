@@ -84,7 +84,7 @@ jobs:
         echo 'tools/upx' >> .git/info/sparse-checkout
         echo 'tools/wrt350nv2-builder' >> .git/info/sparse-checkout
         git pull origin master
-        cp -Ruf package ../ && cp -Ruf tools ../ && cd ../ && rm -rf lean && rm -rf package/lean/luci-app-docker && sed -i 's/:=+luci-app-samba/:=+luci-app-samba4/g' package/lean/autosamba/Makefile && rm -rf package/lean/samba4
+        cp -Ruf package ../ && cp -Ruf tools ../ && cd ../ && rm -rf lean && rm -rf package/lean/luci-app-docker && sed -i 's/:=+luci-app-samba/:=+luci-app-samba4/g' package/lean/autosamba/Makefile && rm -rf package/lean/samba4 &&  && sed -i '/tools-$(CONFIG_USE_SPARSE) += sparse/a tools-y += ucl upx' tools/Makefile && sed -i '/$(curdir)\/zstd\/compile := $(curdir)\/cmake\/compile/a $(curdir)/upx/compile := $(curdir)/ucl/compile' tools/Makefile
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a &&  cp -Ruf feeds/packages/lang feeds  && cp -rf feeds/packages/net/samba4 package/lean/
 
