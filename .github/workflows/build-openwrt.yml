@@ -86,7 +86,6 @@ jobs:
         git pull origin master
         cp -Ruf package ../ && cp -Ruf tools ../ && cd ../ && rm -rf lean && rm -rf package/lean/luci-app-docker
         sed -i 's/:=+luci-app-samba/:=+luci-app-samba4/g' package/lean/autosamba/Makefile && rm -rf package/lean/samba4
-	
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a &&  cp -Ruf feeds/packages/lang feeds  && cp -rf feeds/packages/net/samba4 package/lean/
 
